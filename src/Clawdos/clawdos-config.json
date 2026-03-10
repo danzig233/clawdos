@@ -1,0 +1,11 @@
+{
+  "clientId": "w10-01",
+  "listenIp": "0.0.0.0",
+  "port": 17171,
+  "apiKey": "your-secret-key-here",
+  "workingDirs": [
+    "C:\\OpenClawWorking",
+    "D:\\OpenClawWorking2"
+  ],
+  "shellAllowList": null
+}
