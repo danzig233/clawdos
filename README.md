@@ -126,6 +126,8 @@ You should see `"ok": true` 🎉
 ```
 Clawdos/
 ├── Clawdos.sln
+├── README.md
+├── LICENSE.txt
 ├── src/Clawdos/
 │   ├── Program.cs            # 🚪 Entry: Config · DI · Kestrel · Routing
 │   ├── clawdos-config.json   # ⚙️ Default config
@@ -135,10 +137,59 @@ Clawdos/
 │   ├── Endpoints/            # 🔌 API routes
 │   ├── Models/               # 📝 Request/response models
 │   └── Native/               # 🔧 P/Invoke declarations
-└── install/                  # 📦 Service installation scripts
+├── clawdos_skill/            # 🐾 OpenClaw skill package
+│   ├── __init__.py           # Skill entry point
+│   ├── client.py             # HTTP client wrapper
+│   ├── config.py             # Configuration models
+│   ├── skill.json            # Skill manifest
+│   └── tools.py              # Tool definitions
+├── install/                  # 📦 Service installation scripts
+└── api/                      # 🧪 API tests
 ```
 
 ---
+
+## 🐾 OpenClaw Skill Package
+
+Clawdos includes a ready-to-use **OpenClaw skill package** (`clawdos_skill/`) that wraps all 18 API endpoints as OpenClaw tools, enabling seamless integration with OpenClaw agents.
+
+### Features
+
+- **18 Tools**: Direct mapping of all Clawdos endpoints to OpenClaw tools
+- **Type Safety**: Full parameter validation and type hints
+- **Error Handling**: Robust error handling with meaningful messages
+- **Image Support**: Screen capture returns images for visual analysis
+
+### Installation
+
+1. Ensure OpenClaw is installed and configured
+2. Copy `clawdos_skill/` to your OpenClaw skills directory
+3. Install dependencies: `pip install requests>=2.28.0`
+4. Configure the skill in your OpenClaw manifest:
+
+```json
+{
+  "skills": {
+    "clawdos": {
+      "base_url": "http://127.0.0.1:17171",
+      "api_key": "your-secret-key-here"
+    }
+  }
+}
+```
+
+### Available Tools
+
+| Category | Tools |
+|----------|-------|
+| Health | `health_check`, `get_env` |
+| Screen | `screen_capture` |
+| Input | `mouse_click`, `mouse_move`, `mouse_drag`, `key_combo`, `type_text`, `input_batch` |
+| Window | `window_list`, `window_focus` |
+| FileSystem | `fs_list`, `fs_read`, `fs_write`, `fs_mkdir`, `fs_delete`, `fs_move` |
+| Shell | `shell_exec` |
+
+Each tool includes detailed descriptions and parameter schemas for optimal agent usage.
 
 ## ⚠️ Runtime Tips
 

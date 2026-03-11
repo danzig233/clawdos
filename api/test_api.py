@@ -499,6 +499,12 @@ def run_all():
     print("=" * 60)
     print("  Clawdos API 接口测试")
     print(f"  Target: {BASE_URL}")
+    print('3')
+    time.sleep(1)
+    print('2')
+    time.sleep(1)
+    print('1')
+    time.sleep(1)
     print("=" * 60)
     print()
 

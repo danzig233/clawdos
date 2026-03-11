@@ -10,6 +10,10 @@
     <AssemblyName>Clawdos</AssemblyName>
     <RootNamespace>Clawdos</RootNamespace>
     <AllowUnsafeCode>true</AllowUnsafeCode>
+
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
