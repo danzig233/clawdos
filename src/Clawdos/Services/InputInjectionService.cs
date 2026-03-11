@@ -122,6 +122,27 @@ public sealed class InputInjectionService
         User32.SendInput(1, new[] { User32.CreateMouseInput(ex, ey, moveFlag | up) }, size);
     }
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Scroll
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    public void Scroll(int amount, int? x = null, int? y = null)
+    {
+        uint flags = 0;
+        int absX = 0, absY = 0;
+        if (x.HasValue && y.HasValue)
+        {
+            ValidateCoord(x.Value, y.Value);
+            var norm = NormalizeCoord(x.Value, y.Value);
+            absX = norm.absX;
+            absY = norm.absY;
+            flags = User32.MOUSEEVENTF_MOVE | User32.MOUSEEVENTF_ABSOLUTE;
+        }
+
+        var input = new[] {
+            User32.CreateMouseWheelInput(amount * 120, absX, absY, flags) // Standard wheel click is 120
+        };
+        User32.SendInput(1, input, Marshal.SizeOf<User32.INPUT>());
+    }
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Keys (keyboard shortcuts, e.g., Ctrl+S)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     public void Keys(string[] combo)
@@ -277,6 +298,9 @@ public sealed class InputInjectionService
                         Drag(a.FromX ?? 0, a.FromY ?? 0,
                              a.ToX ?? 0, a.ToY ?? 0,
                              a.Button ?? "left", a.DurationMs ?? 300);
+                        break;
+                    case "scroll":
+                        Scroll(a.Amount ?? 0, a.X, a.Y);
                         break;
                     case "keys":
                         Keys(a.Combo ?? Array.Empty<string>());

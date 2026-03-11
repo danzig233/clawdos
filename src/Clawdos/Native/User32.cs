@@ -18,6 +18,7 @@ public static class User32
     public const uint MOUSEEVENTF_RIGHTUP    = 0x0010;
     public const uint MOUSEEVENTF_MIDDLEDOWN = 0x0020;
     public const uint MOUSEEVENTF_MIDDLEUP   = 0x0040;
+    public const uint MOUSEEVENTF_WHEEL      = 0x0800;
     public const uint MOUSEEVENTF_ABSOLUTE   = 0x8000;
     // Keyboard event flags
     public const uint KEYEVENTF_KEYUP   = 0x0002;
@@ -89,6 +90,18 @@ public static class User32
             {
                 dx = dx, dy = dy, dwFlags = flags,
                 mouseData = 0, time = 0, dwExtraInfo = IntPtr.Zero
+            }
+        }
+    };
+    public static INPUT CreateMouseWheelInput(int amount, int dx = 0, int dy = 0, uint flags = 0) => new()
+    {
+        type = INPUT_MOUSE,
+        u = new InputUnion
+        {
+            mi = new MOUSEINPUT
+            {
+                dx = dx, dy = dy, dwFlags = flags | MOUSEEVENTF_WHEEL,
+                mouseData = (uint)amount, time = 0, dwExtraInfo = IntPtr.Zero
             }
         }
     };

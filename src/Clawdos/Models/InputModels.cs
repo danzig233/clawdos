@@ -25,6 +25,12 @@ public sealed record TypeRequest(
     bool UseClipboard     = false,
     int? CaptureAfterMs   = null);
 
+public sealed record ScrollRequest(
+    int Amount,
+    int? X = null,
+    int? Y = null,
+    int? CaptureAfterMs = null);
+
 // ── Batch Actions ─────────────────────────────────────────────
 public sealed record BatchRequest(
     BatchAction[] Actions,
@@ -34,7 +40,7 @@ public sealed record BatchRequest(
 /// Defines a single action in a batch request. The Type field determines which other fields are used.
 /// </summary>
 public sealed record BatchAction(
-    string  Type,                     // click | move | drag | keys | type | wait
+    string  Type,                     // click | move | drag | scroll | keys | type | wait
     int?    X            = null,
     int?    Y            = null,
     string? Button       = null,
@@ -43,6 +49,7 @@ public sealed record BatchAction(
     int?    FromY        = null,
     int?    ToX          = null,
     int?    ToY          = null,
+    int?    Amount       = null,
     int?    DurationMs   = null,
     string[]? Combo      = null,
     string? Text         = null,

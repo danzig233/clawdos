@@ -91,13 +91,23 @@ def screen_capture(
             "default": "left", "description": "Mouse button",
         },
         "count": {"type": "integer", "default": 1, "description": "Click count"},
+        "view_width": {"type": "integer", "default": None, "description": "Width of the reference image for scaling"},
+        "view_height": {"type": "integer", "default": None, "description": "Height of the reference image for scaling"},
     },
 )
 def mouse_click(
     client: ClawdosClient,
     x: int, y: int,
     button: str = "left", count: int = 1,
+    view_width: int | None = None,
+    view_height: int | None = None,
 ) -> ToolResult:
+    if view_width and view_height:
+        env = client.env()
+        real_x = int(x * env["screenWidth"] / view_width)
+        real_y = int(y * env["screenHeight"] / view_height)
+        x, y = real_x, real_y
+
     data = client.click(x, y, button=button, count=count, capture_after_ms=200)
     return ToolResult(output=f"Clicked ({x}, {y}) button={button} count={count}", metadata=data)
 
@@ -108,9 +118,20 @@ def mouse_click(
     parameters={
         "x": {"type": "integer", "required": True},
         "y": {"type": "integer", "required": True},
+        "view_width": {"type": "integer", "default": None},
+        "view_height": {"type": "integer", "default": None},
     },
 )
-def mouse_move(client: ClawdosClient, x: int, y: int) -> ToolResult:
+def mouse_move(
+    client: ClawdosClient, x: int, y: int,
+    view_width: int | None = None,
+    view_height: int | None = None,
+) -> ToolResult:
+    if view_width and view_height:
+        env = client.env()
+        x = int(x * env["screenWidth"] / view_width)
+        y = int(y * env["screenHeight"] / view_height)
+
     data = client.move(x, y)
     return ToolResult(output=f"Moved cursor to ({x}, {y})", metadata=data)
 
@@ -125,6 +146,8 @@ def mouse_move(client: ClawdosClient, x: int, y: int) -> ToolResult:
         "to_y":   {"type": "integer", "required": True},
         "button": {"type": "string", "default": "left"},
         "duration_ms": {"type": "integer", "default": 300, "description": "Drag duration in milliseconds"},
+        "view_width": {"type": "integer", "default": None},
+        "view_height": {"type": "integer", "default": None},
     },
 )
 def mouse_drag(
@@ -132,7 +155,17 @@ def mouse_drag(
     from_x: int, from_y: int,
     to_x: int, to_y: int,
     button: str = "left", duration_ms: int = 300,
+    view_width: int | None = None,
+    view_height: int | None = None,
 ) -> ToolResult:
+    if view_width and view_height:
+        env = client.env()
+        sw, sh = env["screenWidth"], env["screenHeight"]
+        from_x = int(from_x * sw / view_width)
+        from_y = int(from_y * sh / view_height)
+        to_x   = int(to_x   * sw / view_width)
+        to_y   = int(to_y   * sh / view_height)
+
     data = client.drag(from_x, from_y, to_x, to_y, button=button, duration_ms=duration_ms)
     return ToolResult(output=f"Dragged ({from_x},{from_y}) → ({to_x},{to_y})", metadata=data)
 
@@ -174,14 +207,42 @@ def type_text(
 
 
 @tool(
+    name="mouse_scroll",
+    description="Scroll the mouse wheel. Positive for up, negative for down.",
+    parameters={
+        "amount": {"type": "integer", "required": True, "description": "Scroll amount (clicks/units)"},
+        "x": {"type": "integer", "default": None, "description": "Optional X coordinate to scroll at"},
+        "y": {"type": "integer", "default": None, "description": "Optional Y coordinate to scroll at"},
+        "view_width": {"type": "integer", "default": None},
+        "view_height": {"type": "integer", "default": None},
+    },
+)
+def mouse_scroll(
+    client: ClawdosClient,
+    amount: int,
+    x: int | None = None,
+    y: int | None = None,
+    view_width: int | None = None,
+    view_height: int | None = None,
+) -> ToolResult:
+    if x is not None and y is not None and view_width and view_height:
+        env = client.env()
+        x = int(x * env["screenWidth"] / view_width)
+        y = int(y * env["screenHeight"] / view_height)
+
+    data = client.scroll(amount, x=x, y=y, capture_after_ms=300)
+    return ToolResult(output=f"Scrolled {amount} units at ({x}, {y})", metadata=data)
+
+
+@tool(
     name="input_batch",
-    description="Execute multiple input actions (move/click/drag/keys/type/wait) sequentially in a single batch.",
+    description="Execute multiple input actions (move/click/drag/scroll/keys/type/wait) sequentially in a single batch.",
     parameters={
         "actions": {
             "type": "array", "required": True,
             "description": (
                 "List of actions. Each action is a dict with a required 'type' field.\n"
-                "Supported types: move, click, drag, keys, type, wait\n"
+                "Supported types: move, click, drag, scroll, keys, type, wait\n"
                 'Example: [{"type": "click", "x": 100, "y": 200}]'
             ),
         },
