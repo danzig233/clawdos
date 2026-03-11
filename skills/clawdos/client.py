@@ -116,6 +116,17 @@ class ClawdosClient:
             "captureAfterMs": capture_after_ms,
         }).json()
 
+    def scroll(
+        self, amount: int,
+        x: Optional[int] = None,
+        y: Optional[int] = None,
+        capture_after_ms: int = 0,
+    ) -> dict:
+        payload = {"amount": amount, "captureAfterMs": capture_after_ms}
+        if x is not None: payload["x"] = x
+        if y is not None: payload["y"] = y
+        return self._post("/v1/input/scroll", payload).json()
+
     def batch(
         self, actions: list[dict],
         capture_after_ms: int = 0,

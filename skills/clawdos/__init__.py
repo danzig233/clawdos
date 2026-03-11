@@ -10,7 +10,7 @@ from .client import ClawdosClient
 from .tools import (
     health_check, get_env,
     screen_capture,
-    mouse_click, mouse_move, mouse_drag,
+    mouse_click, mouse_move, mouse_drag, mouse_scroll,
     key_combo, type_text, input_batch,
     window_list, window_focus,
     fs_list, fs_read, fs_write,
@@ -45,7 +45,7 @@ def create_skill(config: dict | None = None) -> Skill:
     all_tools = [
         health_check, get_env,
         screen_capture,
-        mouse_click, mouse_move, mouse_drag,
+        mouse_click, mouse_move, mouse_drag, mouse_scroll,
         key_combo, type_text, input_batch,
         window_list, window_focus,
         fs_list, fs_read, fs_write,

@@ -143,6 +143,21 @@ def test_input_drag():
     return resp.json()
 
 
+def test_input_scroll():
+    """POST /v1/input/scroll — Mouse scroll"""
+    payload = {
+        "amount": -2,
+        "x": 500,
+        "y": 500,
+        "captureAfterMs": 200,
+    }
+    resp = requests.post(f"{BASE_URL}/v1/input/scroll", json=payload, headers=HEADERS)
+    log_result("POST /v1/input/scroll", resp)
+    assert resp.status_code == 200
+    assert resp.json()["ok"] is True
+    return resp.json()
+
+
 def test_input_keys():
     """POST /v1/input/keys — Key combination"""
     payload = {
@@ -194,6 +209,7 @@ def test_input_batch():
             {"type": "wait", "ms": 100},
             {"type": "keys", "combo": ["CTRL", "A"]},
             {"type": "type", "text": "batch test", "useClipboard": False},
+            {"type": "scroll", "amount": -1},
             {"type": "drag", "fromX": 100, "fromY": 100, "toX": 400, "toY": 400, "durationMs": 200},
         ],
         "captureAfterMs": 300,
@@ -519,6 +535,7 @@ def run_all():
         ("Click",       test_input_click),
         ("Move",        test_input_move),
         ("Drag",        test_input_drag),
+        ("Scroll",      test_input_scroll),
         ("Keys",        test_input_keys),
         ("Type ASCII",  test_input_type_ascii),
         ("Type 中文",   test_input_type_chinese),

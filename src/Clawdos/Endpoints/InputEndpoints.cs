@@ -55,6 +55,23 @@ public static class InputEndpoints
                 return Results.BadRequest(new ApiError(ex.Message));
             }
         });
+        // ── Scroll ────────────────────────────────────
+        app.MapPost("/v1/input/scroll", (ScrollRequest req, InputInjectionService input) =>
+        {
+            try
+            {
+                input.Scroll(req.Amount, req.X, req.Y);
+                var actionId = Guid.NewGuid().ToString();
+                var afterCap = input.CaptureAfter(req.CaptureAfterMs);
+                if (afterCap is not null)
+                    return Results.Ok(new ApiOkWithCapture(true, actionId, afterCap));
+                return Results.Ok(new ApiOk(true, actionId));
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                return Results.BadRequest(new ApiError(ex.Message));
+            }
+        });
         // ── Keys ──────────────────────────────────────
         app.MapPost("/v1/input/keys", (KeysRequest req, InputInjectionService input) =>
         {

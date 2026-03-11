@@ -7,7 +7,7 @@
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Platform](https://img.shields.io/badge/Platform-Windows_x64-0078D6?logo=windows&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-green?logo=opensourceinitiative&logoColor=white)]()
-[![API](https://img.shields.io/badge/API-18_Endpoints-FF6F00?logo=fastapi&logoColor=white)]()
+[![API](https://img.shields.io/badge/API-19_Endpoints-FF6F00?logo=fastapi&logoColor=white)]()
 
 > **OpenClaw thinks. Clawdos acts.** A secure local HTTP API for screen capture, input automation, window control, sandboxed file operations, and controlled command execution on Windows.
 
@@ -21,7 +21,7 @@
 
 OpenClaw is the brain, Clawdos is the hand reaching into Windows.
 
-`.NET 8 Minimal API` → `Windows Service` → **18 Endpoints** → **6 Capability Domains**
+`.NET 8 Minimal API` → `Windows Service` → **19 Endpoints** → **6 Capability Domains**
 
 | Capability | What It Does |
 |------|--------|
@@ -106,6 +106,7 @@ You should see `"ok": true` 🎉
 | 🖱️ Input | `POST` | `/v1/input/click` | Mouse click |
 | 🖱️ Input | `POST` | `/v1/input/move` | Mouse move |
 | 🖱️ Input | `POST` | `/v1/input/drag` | Mouse drag |
+| 🖱️ Input | `POST` | `/v1/input/scroll` | Mouse scroll |
 | ⌨️ Input | `POST` | `/v1/input/keys` | Key combinations |
 | ⌨️ Input | `POST` | `/v1/input/type` | Text input |
 | ⚙️ Input | `POST` | `/v1/input/batch` | Batch actions (fail-fast) |
@@ -155,7 +156,7 @@ Clawdos includes a ready-to-use **OpenClaw skill package** (`clawdos_skill/`) th
 
 ### Features
 
-- **18 Tools**: Direct mapping of all Clawdos endpoints to OpenClaw tools
+- **19 Tools**: Direct mapping of all Clawdos endpoints to OpenClaw tools
 - **Type Safety**: Full parameter validation and type hints
 - **Error Handling**: Robust error handling with meaningful messages
 - **Image Support**: Screen capture returns images for visual analysis
@@ -184,7 +185,7 @@ Clawdos includes a ready-to-use **OpenClaw skill package** (`clawdos_skill/`) th
 |----------|-------|
 | Health | `health_check`, `get_env` |
 | Screen | `screen_capture` |
-| Input | `mouse_click`, `mouse_move`, `mouse_drag`, `key_combo`, `type_text`, `input_batch` |
+| Input | `mouse_click`, `mouse_move`, `mouse_drag`, `mouse_scroll`, `key_combo`, `type_text`, `input_batch` |
 | Window | `window_list`, `window_focus` |
 | FileSystem | `fs_list`, `fs_read`, `fs_write`, `fs_mkdir`, `fs_delete`, `fs_move` |
 | Shell | `shell_exec` |

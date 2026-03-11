@@ -1,10 +1,11 @@
 {
   "name": "clawdos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "display_name": "Windows Execution Interface for OpenClaw",
   "description": "Windows automation via Clawdos API: screen capture, mouse/keyboard input, window management, file-system operations, and shell command execution.",
   "author": "DANZIG MOE",
   "icon": "🐾",
+  "license": "MIT",
   "python_requires": ">=3.10",
   "dependencies": [
     "requests>=2.28.0"
