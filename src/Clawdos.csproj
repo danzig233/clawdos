@@ -10,6 +10,7 @@
     <AssemblyName>Clawdos</AssemblyName>
     <RootNamespace>Clawdos</RootNamespace>
     <AllowUnsafeCode>true</AllowUnsafeCode>
+    <UseWindowsForms>true</UseWindowsForms>
 
     <SelfContained>true</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>

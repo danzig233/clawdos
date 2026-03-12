@@ -4,6 +4,11 @@ public static class Gdi32
 {
     public const int LOGPIXELSX = 88;
     public const int LOGPIXELSY = 90;
+
     [DllImport("gdi32.dll")]
     public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+    [DllImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DeleteObject(IntPtr hObject);
 }
