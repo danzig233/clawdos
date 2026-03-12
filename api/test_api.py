@@ -531,7 +531,7 @@ def run_all():
         # ── Screen ──
         ("Capture PNG", test_screen_capture_png),
         ("Capture JPG", test_screen_capture_jpg),
-        # # ── Input ──
+        # ── Input ──
         ("Click",       test_input_click),
         ("Move",        test_input_move),
         ("Drag",        test_input_drag),
@@ -540,11 +540,11 @@ def run_all():
         ("Type ASCII",  test_input_type_ascii),
         ("Type 中文",   test_input_type_chinese),
         ("Batch",       test_input_batch),
-        # # ── Window ──
+        # ── Window ──
         ("Window List", test_window_list),
         ("Window Focus",test_window_focus),
         ("Focus by Proc", test_window_focus_by_process),
-        # # ── FileSystem ──
+        # ── FileSystem ──
         ("FS Mkdir",    test_fs_mkdir),
         ("FS Write",    test_fs_write),
         ("FS List",     test_fs_list),

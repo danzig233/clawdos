@@ -10,6 +10,9 @@ public static class User32
     public const int SM_CXSCREEN = 0;
     public const int SM_CYSCREEN = 1;
     public const int SW_RESTORE  = 9;
+
+    public const int CURSOR_SHOWING = 0x00000001;
+
     // Mouse event flags
     public const uint MOUSEEVENTF_MOVE       = 0x0001;
     public const uint MOUSEEVENTF_LEFTDOWN   = 0x0002;
@@ -80,6 +83,33 @@ public static class User32
         public RECT   rc;
         public int    lParam;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT
+    {
+        public int x;
+        public int y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CURSORINFO
+    {
+        public int cbSize;
+        public int flags;
+        public IntPtr hCursor;
+        public POINT ptScreenPos;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ICONINFO
+    {
+        public bool fIcon;
+        public int xHotspot;
+        public int yHotspot;
+        public IntPtr hbmMask;
+        public IntPtr hbmColor;
+    }
+
     // ━━ Factory Methods ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     public static INPUT CreateMouseInput(int dx, int dy, uint flags) => new()
     {
@@ -196,6 +226,19 @@ public static class User32
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetCursorInfo(ref CURSORINFO pci);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DrawIcon(IntPtr hDC, int X, int Y, IntPtr hIcon);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetIconInfo(IntPtr hIcon, out ICONINFO piconinfo);
+
     // IME (imm32.dll)
     [DllImport("imm32.dll")]
     public static extern IntPtr ImmGetContext(IntPtr hWnd);

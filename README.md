@@ -76,7 +76,18 @@ Edit `clawdos-config.json` in the publish directory:
 > 💡 Built-in default whitelist is used when `shellAllowList` is `null`.
 > Environment variable overrides supported: `CLAWDOS_LISTEN_IP` / `CLAWDOS_PORT` / `CLAWDOS_API_KEY`
 
-### 3️⃣ Install as Service
+### 3️⃣ Run & System Tray
+
+You can run `Clawdos.exe` directly. It will start as a system tray application featuring a crab (🦀) icon.
+Right-click the tray icon to access:
+- **Start Service**: Starts the HTTP API service.
+- **Stop Service**: Stops the HTTP API service.
+- **About**: Opens the project's GitHub page.
+- **Exit**: Stops the service and closes the application.
+
+### 4️⃣ Install as Service (Optional)
+
+If you prefer to run it as a background Windows Service instead of a tray application:
 
 ```
 .\install\Install-ClawdosService.ps1 install
@@ -84,7 +95,7 @@ Edit `clawdos-config.json` in the publish directory:
 
 ```
 
-### 4️⃣ Test
+### 5️⃣ Test
 
 ```
 

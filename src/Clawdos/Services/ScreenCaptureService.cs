@@ -1,4 +1,3 @@
-
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -29,15 +28,49 @@ public sealed class ScreenCaptureService : IDisposable
     {
         // Try DXGI
         var bitmap = TryCaptureDxgi();
+
         // Fallback GDI
         bitmap ??= TryCaptureGdi();
+
         if (bitmap is null)
             return null;
+
         using (bitmap)
         {
+            DrawCursor(bitmap);
             return EncodeBitmap(bitmap, format, quality);
         }
     }
+
+    private static void DrawCursor(Bitmap bitmap)
+    {
+        try
+        {
+            var cursorInfo = new User32.CURSORINFO { cbSize = Marshal.SizeOf<User32.CURSORINFO>() };
+            if (User32.GetCursorInfo(ref cursorInfo) && (cursorInfo.flags & User32.CURSOR_SHOWING) == User32.CURSOR_SHOWING)
+            {
+                if (User32.GetIconInfo(cursorInfo.hCursor, out var iconInfo))
+                {
+                    try
+                    {
+                        using var icon = Icon.FromHandle(cursorInfo.hCursor);
+                        using var g = Graphics.FromImage(bitmap);
+                        g.DrawIcon(icon, cursorInfo.ptScreenPos.x - iconInfo.xHotspot, cursorInfo.ptScreenPos.y - iconInfo.yHotspot);
+                    }
+                    finally
+                    {
+                        if (iconInfo.hbmMask != IntPtr.Zero) Gdi32.DeleteObject(iconInfo.hbmMask);
+                        if (iconInfo.hbmColor != IntPtr.Zero) Gdi32.DeleteObject(iconInfo.hbmColor);
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Ignore cursor drawing errors
+        }
+    }
+
     // ── DXGI Desktop Duplication ─────────────────────────
     private Bitmap? TryCaptureDxgi()
     {

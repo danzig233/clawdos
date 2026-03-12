@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using System.Windows.Forms;
 using Clawdos.Configuration;
 using Clawdos.Endpoints;
 using Clawdos.Middleware;
@@ -68,4 +69,42 @@ app.Logger.LogInformation(
     "Clawdos starting on {Ip}:{Port}  (clientId={ClientId})",
     config.ListenIp, config.Port, config.ClientId);
 
-app.Run();
+if (WindowsServiceHelpers.IsWindowsService() || args.Contains("--console"))
+{
+    app.Run();
+}
+else
+{
+    app.DisposeAsync().GetAwaiter().GetResult(); // Dispose the initial app
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+    Application.Run(new Clawdos.TrayApplicationContext(
+        () => 
+        {
+            var newBuilder = WebApplication.CreateBuilder(options);
+            newBuilder.Host.UseWindowsService();
+            newBuilder.Services.AddSingleton(config);
+            newBuilder.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Parse(config.ListenIp), config.Port));
+            
+            newBuilder.Services.AddSingleton<HealthMetricsService>();
+            newBuilder.Services.AddSingleton<EnvironmentService>();
+            newBuilder.Services.AddSingleton<ScreenCaptureService>();
+            newBuilder.Services.AddSingleton<InputInjectionService>();
+            newBuilder.Services.AddSingleton<WindowManagementService>();
+            newBuilder.Services.AddSingleton<FileSandboxService>();
+            newBuilder.Services.AddSingleton<ShellService>();
+            
+            var newApp = newBuilder.Build();
+            newApp.UseMiddleware<MetricsMiddleware>();
+            newApp.UseMiddleware<ApiKeyAuthMiddleware>();
+            
+            newApp.MapHealthEndpoints();
+            newApp.MapScreenEndpoints();
+            newApp.MapInputEndpoints();
+            newApp.MapWindowEndpoints();
+            newApp.MapFileSystemEndpoints();
+            newApp.MapShellEndpoints();
+            return newApp;
+        }));
+}
+
