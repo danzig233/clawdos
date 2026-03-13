@@ -36,6 +36,7 @@ public static class User32
     public const uint KLF_SETFORPROCESS = 0x00000100;
     // Window messages
     public const uint WM_INPUTLANGCHANGEREQUEST = 0x0050;
+
     // ━━ Structures ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT
@@ -175,6 +176,7 @@ public static class User32
     public static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
     [DllImport("user32.dll")]
     public static extern int GetSystemMetrics(int nIndex);
+
     [DllImport("user32.dll")]
     public static extern IntPtr GetDC(IntPtr hWnd);
     [DllImport("user32.dll")]

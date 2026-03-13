@@ -376,7 +376,7 @@ def test_shell_exec_echo():
     payload = {
         "command": "echo",
         "args": ["Hello from Clawdos Shell!"],
-        "timeoutSec": 10,
+        "timeoutMs": 10000,
     }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (echo)", resp)
@@ -394,7 +394,7 @@ def test_shell_exec_with_workdir():
         "command": "dir" if os.name == "nt" else "ls",
         "args": [],
         "workingDir": "",  # 留空使用默认 workingDirs[0]
-        "timeoutSec": 10,
+        "timeoutMs": 10000,
     }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (dir/ls with workdir)", resp)
@@ -408,7 +408,7 @@ def test_shell_exec_multiarg():
     payload = {
         "command": "ping",
         "args": ["-n", "1", "127.0.0.1"] if os.name == "nt" else ["-c", "1", "127.0.0.1"],
-        "timeoutSec": 15,
+        "timeoutMs": 15000,
     }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (ping)", resp)
@@ -424,13 +424,13 @@ def test_shell_exec_stderr():
         payload = {
             "command": "cmd",
             "args": ["/c", "nonexistent_command_xyz"],
-            "timeoutSec": 10,
+            "timeoutMs": 10000,
         }
     else:
         payload = {
             "command": "python",
             "args": ["-c", "import sys; sys.stderr.write('test stderr'); sys.exit(1)"],
-            "timeoutSec": 10,
+            "timeoutMs": 10000,
         }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (stderr)", resp)
@@ -482,7 +482,7 @@ def test_shell_blocked_command():
     payload = {
         "command": "rm",  # 不在默认允许列表中
         "args": ["-rf", "/"],
-        "timeoutSec": 5,
+        "timeoutMs": 5000,
     }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (blocked cmd)", resp)
@@ -501,7 +501,7 @@ def test_shell_workdir_escape():
         "command": "echo",
         "args": ["escape test"],
         "workingDir": "../../etc",
-        "timeoutSec": 5,
+        "timeoutMs": 5000,
     }
     resp = requests.post(f"{BASE_URL}/v1/shell/exec", json=payload, headers=HEADERS)
     log_result("POST /v1/shell/exec (workdir escape)", resp)

@@ -7,6 +7,9 @@ using Clawdos.Middleware;
 using Clawdos.Services;
 using Microsoft.Extensions.Hosting.WindowsServices;
 
+// ── Ensure High DPI Awareness (must be called before any UI or resolution-related code) ──
+Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+
 // ── Configure Host ──────────────────────────────────────────────
 var options = new WebApplicationOptions
 {
@@ -78,6 +81,7 @@ else
     app.DisposeAsync().GetAwaiter().GetResult(); // Dispose the initial app
     Application.EnableVisualStyles();
     Application.SetCompatibleTextRenderingDefault(false);
+
     Application.Run(new Clawdos.TrayApplicationContext(
         () => 
         {

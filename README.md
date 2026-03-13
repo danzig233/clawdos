@@ -149,12 +149,11 @@ Clawdos/
 │   ├── Endpoints/            # 🔌 API routes
 │   ├── Models/               # 📝 Request/response models
 │   └── Native/               # 🔧 P/Invoke declarations
-├── clawdos_skill/            # 🐾 OpenClaw skill package
-│   ├── __init__.py           # Skill entry point
-│   ├── client.py             # HTTP client wrapper
-│   ├── config.py             # Configuration models
-│   ├── skill.json            # Skill manifest
-│   └── tools.py              # Tool definitions
+├── skills/                   # 🐾 OpenClaw skill package
+│   └── clawdos/
+│       ├── SKILL.md          # Skill manifest & documentation
+│       └── scripts/
+│           └── clawdos.py    # CLI wrapper for API
 ├── install/                  # 📦 Service installation scripts
 └── api/                      # 🧪 API tests
 ```
@@ -163,21 +162,29 @@ Clawdos/
 
 ## 🐾 OpenClaw Skill Package
 
-Clawdos includes a ready-to-use **OpenClaw skill package** (`clawdos_skill/`) that wraps all 18 API endpoints as OpenClaw tools, enabling seamless integration with OpenClaw agents.
+Clawdos includes a ready-to-use **OpenClaw skill package** (`skills/clawdos/`) that wraps all API endpoints as OpenClaw tools, enabling seamless integration with OpenClaw agents.
 
 ### Features
 
-- **19 Tools**: Direct mapping of all Clawdos endpoints to OpenClaw tools
+- **Integrated Tools**: Direct mapping of Clawdos endpoints to OpenClaw tools
 - **Type Safety**: Full parameter validation and type hints
 - **Error Handling**: Robust error handling with meaningful messages
 - **Image Support**: Screen capture returns images for visual analysis
 
 ### Installation
 
+The easiest way to install the Clawdos skill is via **Clawhub**:
+
+```bash
+clawhub install clawdos
+```
+
+Alternatively, you can install it manually:
+
 1. Ensure OpenClaw is installed and configured
-2. Copy `clawdos_skill/` to your OpenClaw skills directory
+2. Copy the `skills/clawdos/` directory to your OpenClaw skills directory
 3. Install dependencies: `pip install requests>=2.28.0`
-4. Configure the skill in your OpenClaw manifest:
+4. Configure the skill in your OpenClaw manifest or environment:
 
 ```json
 {
