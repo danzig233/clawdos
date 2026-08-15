@@ -194,6 +194,7 @@ public sealed class ShellService
         try
         {
             await proc.WaitForExitAsync(cts.Token);
+            proc.WaitForExit(); // Flush all standard output / error streams
         }
         catch (OperationCanceledException)
         {

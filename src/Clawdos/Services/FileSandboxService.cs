@@ -120,8 +120,12 @@ public sealed class FileSandboxService
         }
         else if (Directory.Exists(srcPath))
         {
-            if (Directory.Exists(dstPath) && !overwrite)
-                throw new IOException($"Destination directory already exists: {to}");
+            if (Directory.Exists(dstPath))
+            {
+                if (!overwrite)
+                    throw new IOException($"Destination directory already exists: {to}");
+                Directory.Delete(dstPath, true);
+            }
             Directory.Move(srcPath, dstPath);
         }
         else

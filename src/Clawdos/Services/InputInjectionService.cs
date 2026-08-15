@@ -191,6 +191,47 @@ public sealed class InputInjectionService
         User32.SendInput((uint)arr.Length, arr, Marshal.SizeOf<User32.INPUT>());
     }
     /// <summary>Injecting input via clipboard (for non-ASCII characters)</summary>
+    private static void SetClipboardTextHelper(string text)
+    {
+        if (!User32.OpenClipboard(IntPtr.Zero))
+            return;
+        try
+        {
+            User32.EmptyClipboard();
+            var bytesCount = (text.Length + 1) * 2;
+            var hGlobal = Kernel32.GlobalAlloc(Kernel32.GMEM_MOVEABLE, (UIntPtr)bytesCount);
+            if (hGlobal != IntPtr.Zero)
+            {
+                var lpVar = Kernel32.GlobalLock(hGlobal);
+                if (lpVar != IntPtr.Zero)
+                {
+                    try
+                    {
+                        var chars = text.ToCharArray();
+                        Marshal.Copy(chars, 0, lpVar, chars.Length);
+                        Marshal.WriteInt16(lpVar, chars.Length * 2, 0);
+                    }
+                    finally
+                    {
+                        Kernel32.GlobalUnlock(hGlobal);
+                    }
+                    if (User32.SetClipboardData(User32.CF_UNICODETEXT, hGlobal) == IntPtr.Zero)
+                    {
+                        Kernel32.GlobalFree(hGlobal);
+                    }
+                }
+                else
+                {
+                    Kernel32.GlobalFree(hGlobal);
+                }
+            }
+        }
+        finally
+        {
+            User32.CloseClipboard();
+        }
+    }
+
     private void TypeViaClipboard(string text)
     {
         // Use a global mutex to prevent conflicts with other instances or user actions on the clipboard
@@ -221,13 +262,8 @@ public sealed class InputInjectionService
                 User32.CloseClipboard();
             }
             // Set our text to clipboard
-            if (User32.OpenClipboard(IntPtr.Zero))
-            {
-                User32.EmptyClipboard();
-                var hGlobal = Marshal.StringToHGlobalUni(text);
-                User32.SetClipboardData(User32.CF_UNICODETEXT, hGlobal);
-                User32.CloseClipboard();
-            }
+            SetClipboardTextHelper(text);
+
             // Send Ctrl+V to paste
             Thread.Sleep(30);
             Keys(new[] { "CTRL", "V" });
@@ -235,13 +271,7 @@ public sealed class InputInjectionService
             // Restore original clipboard content
             if (hadText && originalText != null)
             {
-                if (User32.OpenClipboard(IntPtr.Zero))
-                {
-                    User32.EmptyClipboard();
-                    var hGlobal = Marshal.StringToHGlobalUni(originalText);
-                    User32.SetClipboardData(User32.CF_UNICODETEXT, hGlobal);
-                    User32.CloseClipboard();
-                }
+                SetClipboardTextHelper(originalText);
             }
             else if (!hadText)
             {

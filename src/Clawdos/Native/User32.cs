@@ -241,6 +241,10 @@ public static class User32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetIconInfo(IntPtr hIcon, out ICONINFO piconinfo);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DestroyIcon(IntPtr hIcon);
+
     // IME (imm32.dll)
     [DllImport("imm32.dll")]
     public static extern IntPtr ImmGetContext(IntPtr hWnd);

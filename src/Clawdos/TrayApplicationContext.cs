@@ -47,10 +47,16 @@ namespace Clawdos
             using var ms = new System.IO.MemoryStream(imageBytes);
             using var bitmap = new Bitmap(ms);
             
-            // Note: GetHicon() creates an unmanaged handle that needs to be destroyed, 
-            // but the Icon.FromHandle makes a copy/wrapper. However, to avoid memory leak,
-            // we should be careful. Since this runs once, it is acceptable.
-            return Icon.FromHandle(bitmap.GetHicon());
+            var hIcon = bitmap.GetHicon();
+            try
+            {
+                using var tempIcon = Icon.FromHandle(hIcon);
+                return (Icon)tempIcon.Clone();
+            }
+            finally
+            {
+                Clawdos.Native.User32.DestroyIcon(hIcon);
+            }
         }
 
         private async void OnStartService(object? sender, EventArgs e)

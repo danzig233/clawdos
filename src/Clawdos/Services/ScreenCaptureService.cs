@@ -92,47 +92,68 @@ public sealed class ScreenCaptureService : IDisposable
                     ResetDxgi();
                     return null;
                 }
-                using var srcTexture = desktopResource!.QueryInterface<ID3D11Texture2D>();
-                var desc = srcTexture.Description;
-                // Create a CPU-readable staging texture
-                var stagingDesc = new Texture2DDescription
+
+                try
                 {
-                    Width             = desc.Width,
-                    Height            = desc.Height,
-                    MipLevels         = 1,
-                    ArraySize         = 1,
-                    Format            = desc.Format,
-                    SampleDescription = new SampleDescription(1, 0),
-                    Usage             = ResourceUsage.Staging,
-                    BindFlags         = BindFlags.None,
-                    CPUAccessFlags    = CpuAccessFlags.Read,
-                    MiscFlags         = ResourceOptionFlags.None
-                };
-                using var staging = _device.CreateTexture2D(stagingDesc);
-                _context.CopyResource(staging, srcTexture);
-                // Map to CPU memory
-                var mapped = _context.Map(staging, 0, MapMode.Read, MapFlags.None);
-                var bitmap = new Bitmap((int)desc.Width, (int)desc.Height,
-                    PixelFormat.Format32bppArgb);
-                var bmpData = bitmap.LockBits(
-                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    ImageLockMode.WriteOnly,
-                    PixelFormat.Format32bppArgb);
-                // Copy row by row (mapped.RowPitch may differ from bmpData.Stride)
-                for (int y = 0; y < bitmap.Height; y++)
-                unsafe
-                {
-                    var src = mapped.DataPointer + y * mapped.RowPitch;
-                    var dst = bmpData.Scan0 + y * bmpData.Stride;
-                    Buffer.MemoryCopy(
-                        (void*)src, (void*)dst,
-                        bmpData.Stride, bitmap.Width * 4);
+                    using (desktopResource)
+                    {
+                        using var srcTexture = desktopResource.QueryInterface<ID3D11Texture2D>();
+                        var desc = srcTexture.Description;
+                        // Create a CPU-readable staging texture
+                        var stagingDesc = new Texture2DDescription
+                        {
+                            Width             = desc.Width,
+                            Height            = desc.Height,
+                            MipLevels         = 1,
+                            ArraySize         = 1,
+                            Format            = desc.Format,
+                            SampleDescription = new SampleDescription(1, 0),
+                            Usage             = ResourceUsage.Staging,
+                            BindFlags         = BindFlags.None,
+                            CPUAccessFlags    = CpuAccessFlags.Read,
+                            MiscFlags         = ResourceOptionFlags.None
+                        };
+                        using var staging = _device.CreateTexture2D(stagingDesc);
+                        _context.CopyResource(staging, srcTexture);
+                        // Map to CPU memory
+                        var mapped = _context.Map(staging, 0, MapMode.Read, MapFlags.None);
+                        try
+                        {
+                            var bitmap = new Bitmap((int)desc.Width, (int)desc.Height,
+                                PixelFormat.Format32bppArgb);
+                            var bmpData = bitmap.LockBits(
+                                new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                                ImageLockMode.WriteOnly,
+                                PixelFormat.Format32bppArgb);
+                            try
+                            {
+                                // Copy row by row (mapped.RowPitch may differ from bmpData.Stride)
+                                for (int y = 0; y < bitmap.Height; y++)
+                                unsafe
+                                {
+                                    var src = mapped.DataPointer + y * mapped.RowPitch;
+                                    var dst = bmpData.Scan0 + y * bmpData.Stride;
+                                    Buffer.MemoryCopy(
+                                        (void*)src, (void*)dst,
+                                        bmpData.Stride, bitmap.Width * 4);
+                                }
+                            }
+                            finally
+                            {
+                                bitmap.UnlockBits(bmpData);
+                            }
+                            return bitmap;
+                        }
+                        finally
+                        {
+                            _context.Unmap(staging, 0);
+                        }
+                    }
                 }
-                bitmap.UnlockBits(bmpData);
-                _context.Unmap(staging, 0);
-                desktopResource.Dispose();
-                _duplication.ReleaseFrame();
-                return bitmap;
+                finally
+                {
+                    _duplication.ReleaseFrame();
+                }
             }
             catch
             {
